@@ -1,0 +1,6 @@
+Generate 100 samples: 10.10s
+  => 10000 would take 1010s = 16.8min
+Tensorize + Score 100 samples: 0.095s
+Filtered [0.3-0.7]: 0/100
+Score range: 0.000 - 0.000
+Score mean: 0.000

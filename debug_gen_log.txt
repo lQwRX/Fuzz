@@ -1,0 +1,12 @@
+START
+checkpoint dir: D:\PythonWorkSpace\Fuzz\model\checkpoints_improved, exists: True
+gen_file: D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\no_clustering\class_0\generator_step10.pth, exists: True
+data_path: D:\PythonWorkSpace\Fuzz\data\clusters\no_clustering, exists: True
+data.npy exists: True
+ckpt_vocab_size=258, max_len=64, DEVICE=cpu
+Generator loaded OK
+Generating 10 samples...
+Generated 10 samples
+Converted 10 hex cases
+Wrote to D:\PythonWorkSpace\Fuzz\output\test_cases\gan_cases.txt
+SUCCESS

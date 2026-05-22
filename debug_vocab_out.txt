@@ -1,0 +1,20 @@
+vocab size: 257
+vocab entries (first 15): {0: 2, 1: 3, 2: 4, 3: 5, 4: 6, 5: 7, 6: 8, 7: 9, 8: 10, 9: 11, 10: 12, 11: 13, 12: 14, 13: 15, 14: 16}
+
+Roundtrip test:
+  orig: 0000000000060a0800040000
+  enc->dec: 0000000000060a0800040000
+  match: True
+
+Data shape: (5679, 64), max_idx: 257, min_idx: 1
+First seq indices (first 20): [60, 74, 2, 2, 2, 8, 3, 3, 2, 96, 2, 75, 1, 1, 1, 1, 1, 1, 1, 1]
+First seq decoded: 3a48000000060101005e0049
+
+ckpt vocab_size=258, data vocab_size=258
+
+Generator samples (T=1.0):
+  0: len=62 proto_id=0x0002 hex=00080002060463bb13ed33c3d2dbc4683f154c16...
+  1: len=63 proto_id=0x0500 hex=0003050014100d0030fa2f5d2cad4e604c475a47...
+  2: len=64 proto_id=0x006C hex=0039006c0271abff03676372287fa316e1363764...
+  3: len=64 proto_id=0x0C10 hex=00000c1008abddeed1862c54f673a01ab027bbd5...
+  4: len=64 proto_id=0x000B hex=0066000b028ec171006000061291607b3800514c...

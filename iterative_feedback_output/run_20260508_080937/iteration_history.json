@@ -1,0 +1,32 @@
+[
+  {
+    "iteration": 1,
+    "valid_cases": 137,
+    "total_cases": 1997,
+    "anomaly_seeds": 0,
+    "cumulative_seeds": 0,
+    "tirr": 100.0,
+    "aovd": 0.0,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\model\\checkpoints_improved\\advanced\\class_0\\generator_step10.pth"
+  },
+  {
+    "iteration": 2,
+    "valid_cases": 115,
+    "total_cases": 1997,
+    "anomaly_seeds": 0,
+    "cumulative_seeds": 0,
+    "tirr": 100.0,
+    "aovd": 0.0,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\model\\checkpoints_improved\\advanced\\class_0\\generator_step10.pth"
+  },
+  {
+    "iteration": 3,
+    "valid_cases": 133,
+    "total_cases": 1995,
+    "anomaly_seeds": 3,
+    "cumulative_seeds": 3,
+    "tirr": 100.0,
+    "aovd": 2.2556390977443606,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\model\\checkpoints_improved\\advanced\\class_0\\generator_step10.pth"
+  }
+]

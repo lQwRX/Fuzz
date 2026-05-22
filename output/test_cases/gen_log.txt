@@ -1,0 +1,293 @@
+=== Generation started (resume-safe mode) ===
+[GEN] no_clustering/class_0: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\no_clustering\class_0\retrain\generator_retrained.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] no_clustering/class_0: 4200 cases generated, 4200 new to merged
+[GEN] same_length/class_0: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\same_length\class_0\generator_step10.pth
+  vocab_size mismatch (ckpt=16, data=15), using ckpt value
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4178 hex cases (before dedup)
+[DONE] same_length/class_0: 4178 cases generated, 4178 new to merged
+[GEN] same_length/class_1: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\same_length\class_1\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] same_length/class_1: 4177 cases generated, 4177 new to merged
+[GEN] same_length/class_2: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\same_length\class_2\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] same_length/class_2: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_0: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_0\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_0: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_1: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_1\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_1: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_2: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_2\generator_step10.pth
+  vocab_size mismatch (ckpt=248, data=243), using ckpt value
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_2: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_3: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_3\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_3: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_4: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_4\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_4: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_5: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_5\generator_step10.pth
+  vocab_size mismatch (ckpt=258, data=256), using ckpt value
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_5: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_6: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_6\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 500/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+=== Generation started (resume-safe mode) ===
+[SKIP] no_clustering/class_0: already done (4200 cases)
+[SKIP] same_length/class_0: already done (4178 cases)
+[SKIP] same_length/class_1: already done (4177 cases)
+[SKIP] same_length/class_2: already done (4200 cases)
+[SKIP] advanced/class_0: already done (4200 cases)
+[SKIP] advanced/class_1: already done (4200 cases)
+[SKIP] advanced/class_2: already done (4200 cases)
+[SKIP] advanced/class_3: already done (4200 cases)
+[SKIP] advanced/class_4: already done (4200 cases)
+[SKIP] advanced/class_5: already done (4200 cases)
+[GEN] advanced/class_6: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_6\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 3500/4200 samples generated
+    ... 500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_6: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_7: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_7\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 1500/4200 samples generated
+    ... 500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 1000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 1500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_6: 4200 cases generated, 4200 new to merged
+[GEN] advanced/class_7: model=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved\advanced\class_7\generator_step10.pth
+  Generating 4200 samples in batches of 500...
+    ... 3500/4200 samples generated
+    ... 500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+    ... 1000/4200 samples generated
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_7: 4200 cases generated, 4200 new to merged
+=== Final dedup ===
+Total unique cases in merged file: 54555
+=== Generation finished ===
+    ... 1500/4200 samples generated
+    ... 2000/4200 samples generated
+    ... 2500/4200 samples generated
+    ... 3000/4200 samples generated
+    ... 3500/4200 samples generated
+    ... 4000/4200 samples generated
+    ... 4200/4200 samples generated
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+[DONE] advanced/class_7: 4200 cases generated, 4200 new to merged
+=== Final dedup ===
+Total unique cases in merged file: 58755
+=== Generation finished ===
+=== Generation started ===
+MODEL_CHECKPOINT_DIR=D:\PythonWorkSpace\Fuzz\model\checkpoints_improved exists=True
+Processing no_clustering, dir exists=True
+Generating from no_clustering ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Processing same_length, dir exists=True
+  subdirs=['class_0', 'class_1', 'class_2']
+Generating from same_length/class_0 ...
+  vocab_size mismatch (ckpt=16, data=15), using ckpt value
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4174 hex cases (before dedup)
+  Got 4172 cases
+Generating from same_length/class_1 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4176 cases
+Generating from same_length/class_2 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Processing advanced, dir exists=True
+  subdirs=['class_0', 'class_1', 'class_2', 'class_3', 'class_4', 'class_5', 'class_6', 'class_7']
+Generating from advanced/class_0 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_1 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_2 ...
+  vocab_size mismatch (ckpt=248, data=243), using ckpt value
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_3 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_4 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_5 ...
+  vocab_size mismatch (ckpt=258, data=256), using ckpt value
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_6 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Generating from advanced/class_7 ...
+  Generating 4200 samples (batch=32)...
+  Generated 4200 raw samples
+  Converted to 4200 hex cases (before dedup)
+  Got 4200 cases
+Total (after dedup): 50348
+Saved to D:\PythonWorkSpace\Fuzz\output\test_cases\gan_cases.txt
+no_clustering: 4200 cases saved to D:\PythonWorkSpace\Fuzz\output\test_cases\gan_no_clustering.txt
+same_length: 12548 cases saved to D:\PythonWorkSpace\Fuzz\output\test_cases\gan_same_length.txt
+advanced: 33600 cases saved to D:\PythonWorkSpace\Fuzz\output\test_cases\gan_advanced.txt
+=== Generation finished ===

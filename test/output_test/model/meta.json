@@ -1,0 +1,9 @@
+{
+  "vocab_size": 258,
+  "embed_dim": 256,
+  "hidden_dim": 128,
+  "max_len": 64,
+  "pad_idx": 1,
+  "pretrain_epochs": 20,
+  "final_loss": 0.641213433911102
+}

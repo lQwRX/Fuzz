@@ -1,0 +1,257 @@
+[
+  {
+    "iteration": 1,
+    "valid_cases": 473,
+    "total_cases": 1980,
+    "anomaly_seeds": 26,
+    "cumulative_seeds": 26,
+    "tirr": 85.31317494600432,
+    "aovd": 5.615550755939525,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\model\\checkpoints_improved\\no_clustering\\class_0\\generator_step10.pth",
+    "mode": "mixed",
+    "per_model_stats": [
+      {
+        "cluster_type": "no_clustering",
+        "class_id": 0,
+        "valid": 17,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 0,
+        "valid": 42,
+        "total": 161
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 1,
+        "valid": 131,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 2,
+        "valid": 34,
+        "total": 165
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 0,
+        "valid": 15,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 1,
+        "valid": 53,
+        "total": 165
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 2,
+        "valid": 24,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 3,
+        "valid": 16,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 4,
+        "valid": 14,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 5,
+        "valid": 64,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 6,
+        "valid": 28,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 7,
+        "valid": 35,
+        "total": 166
+      }
+    ]
+  },
+  {
+    "iteration": 2,
+    "valid_cases": 425,
+    "total_cases": 1978,
+    "anomaly_seeds": 32,
+    "cumulative_seeds": 58,
+    "tirr": 85.37170263788968,
+    "aovd": 7.673860911270983,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\iterative_feedback_output\\run_20260508_085613\\iter_1\\generator_retrained.pth",
+    "mode": "mixed",
+    "per_model_stats": [
+      {
+        "cluster_type": "no_clustering",
+        "class_id": 0,
+        "valid": 16,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 0,
+        "valid": 27,
+        "total": 158
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 1,
+        "valid": 114,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 2,
+        "valid": 28,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 0,
+        "valid": 11,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 1,
+        "valid": 45,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 2,
+        "valid": 25,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 3,
+        "valid": 17,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 4,
+        "valid": 10,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 5,
+        "valid": 70,
+        "total": 163
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 6,
+        "valid": 28,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 7,
+        "valid": 34,
+        "total": 166
+      }
+    ]
+  },
+  {
+    "iteration": 3,
+    "valid_cases": 444,
+    "total_cases": 1977,
+    "anomaly_seeds": 22,
+    "cumulative_seeds": 79,
+    "tirr": 84.93150684931507,
+    "aovd": 5.0228310502283104,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\iterative_feedback_output\\run_20260508_085613\\iter_2\\generator_retrained.pth",
+    "mode": "mixed",
+    "per_model_stats": [
+      {
+        "cluster_type": "no_clustering",
+        "class_id": 0,
+        "valid": 17,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 0,
+        "valid": 34,
+        "total": 153
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 1,
+        "valid": 134,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 2,
+        "valid": 29,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 0,
+        "valid": 12,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 1,
+        "valid": 41,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 2,
+        "valid": 23,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 3,
+        "valid": 13,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 4,
+        "valid": 17,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 5,
+        "valid": 64,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 6,
+        "valid": 27,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 7,
+        "valid": 33,
+        "total": 166
+      }
+    ]
+  }
+]

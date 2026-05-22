@@ -1,0 +1,172 @@
+[
+  {
+    "iteration": 1,
+    "valid_cases": 437,
+    "total_cases": 1969,
+    "anomaly_seeds": 31,
+    "cumulative_seeds": 31,
+    "tirr": 83.75870069605568,
+    "aovd": 7.192575406032482,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\model\\checkpoints_improved\\no_clustering\\class_0\\generator_step10.pth",
+    "mode": "mixed",
+    "per_model_stats": [
+      {
+        "cluster_type": "no_clustering",
+        "class_id": 0,
+        "valid": 12,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 0,
+        "valid": 40,
+        "total": 153
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 1,
+        "valid": 125,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 2,
+        "valid": 21,
+        "total": 164
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 0,
+        "valid": 9,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 1,
+        "valid": 49,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 2,
+        "valid": 29,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 3,
+        "valid": 12,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 4,
+        "valid": 20,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 5,
+        "valid": 56,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 6,
+        "valid": 30,
+        "total": 165
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 7,
+        "valid": 34,
+        "total": 166
+      }
+    ]
+  },
+  {
+    "iteration": 2,
+    "valid_cases": 438,
+    "total_cases": 1978,
+    "anomaly_seeds": 22,
+    "cumulative_seeds": 53,
+    "tirr": 85.51401869158879,
+    "aovd": 5.14018691588785,
+    "model_path": "D:\\PythonWorkSpace\\Fuzz\\iterative_feedback_output\\run_20260508_112121\\iter_1\\generator_retrained.pth",
+    "mode": "mixed",
+    "per_model_stats": [
+      {
+        "cluster_type": "no_clustering",
+        "class_id": 0,
+        "valid": 17,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 0,
+        "valid": 33,
+        "total": 155
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 1,
+        "valid": 118,
+        "total": 166
+      },
+      {
+        "cluster_type": "same_length",
+        "class_id": 2,
+        "valid": 20,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 0,
+        "valid": 16,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 1,
+        "valid": 50,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 2,
+        "valid": 29,
+        "total": 165
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 3,
+        "valid": 11,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 4,
+        "valid": 16,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 5,
+        "valid": 68,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 6,
+        "valid": 21,
+        "total": 166
+      },
+      {
+        "cluster_type": "advanced",
+        "class_id": 7,
+        "valid": 39,
+        "total": 166
+      }
+    ]
+  }
+]

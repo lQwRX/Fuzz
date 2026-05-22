@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FuzzGAN - 基于对抗网络的协议模糊测试系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root{--sidebar-w:250px;--primary:#2c3e50;--secondary:#3498db;--success:#27ae60;--danger:#e74c3c;--dark:#1a252f}
+        *{box-sizing:border-box}
+        body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:#f0f2f5;margin:0}
+        .sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;background:var(--dark);padding:0;z-index:1000;overflow-y:auto}
+        .sidebar-brand{padding:20px;border-bottom:1px solid rgba(255,255,255,.1)}
+        .sidebar-brand h5{color:#fff;margin:0;font-weight:700}
+        .sidebar-brand small{color:rgba(255,255,255,.5)}
+        .nav-link{color:rgba(255,255,255,.7);padding:12px 20px;display:flex;align-items:center;gap:10px;transition:.2s}
+        .nav-link:hover,.nav-link.active{background:var(--secondary);color:#fff}
+        .nav-link i{font-size:1.1rem;width:20px;text-align:center}
+        .main{margin-left:var(--sidebar-w);padding:24px}
+        .page-title{background:#fff;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+        .page-title h3{margin:0;color:var(--primary)}
+        .card{border:none;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:20px}
+        .card-header{background:linear-gradient(135deg,var(--secondary),var(--primary));color:#fff;border-radius:12px 12px 0 0!important;padding:12px 16px;font-weight:600;font-size:.95rem}
+        .card-body{padding:16px}
+        .stat-card{border-radius:12px;padding:20px;color:#fff;text-align:center}
+        .stat-card h2{font-size:2rem;font-weight:700;margin:0}
+        .stat-card p{margin:4px 0 0;opacity:.9;font-size:.9rem}
+        .bg-grad-1{background:linear-gradient(135deg,#667eea,#764ba2)}
+        .bg-grad-2{background:linear-gradient(135deg,#11998e,#38ef7d)}
+        .bg-grad-3{background:linear-gradient(135deg,#f093fb,#f5576c)}
+        .bg-grad-4{background:linear-gradient(135deg,#4facfe,#00f2fe)}
+        .section{display:none}.section.active{display:block}
+        .log-box{background:#1e1e1e;border-radius:8px;padding:12px;max-height:350px;overflow-y:auto;font-family:Consolas,Monaco,monospace;font-size:12px;color:#d4d4d4}
+        .log-box .err{color:#f48771}.log-box .ok{color:#89d185}.log-box .warn{color:#dcdcaa}
+        .hex-box{background:#1e1e1e;color:#2ecc71;padding:10px;border-radius:8px;font-family:Consolas,monospace;font-size:11px;word-break:break-all;max-height:180px;overflow-y:auto}
+        .file-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #eee;cursor:pointer;transition:.15s}
+        .file-row:hover{background:#f8f9fa}
+        .file-row:last-child{border-bottom:none}
+        .badge-dir{font-size:.7rem;background:#e9ecef;color:#495057;padding:2px 8px;border-radius:10px;margin-left:6px}
+        .metric-box{text-align:center;padding:16px;background:#f8f9fa;border-radius:8px;margin:6px 0}
+        .metric-box h3{font-size:1.8rem;font-weight:700;margin:0}
+        .metric-box p{margin:2px 0 0;color:#666;font-size:.85rem}
+        .metric-box.good h3{color:var(--success)}.metric-box.bad h3{color:var(--danger)}
+        .btn-primary{background:linear-gradient(135deg,var(--secondary),var(--primary));border:none;border-radius:8px}
+        .btn-primary:hover{opacity:.9}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        .running{animation:pulse 1.5s infinite}
+        .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+        .dot-green{background:var(--success)}.dot-red{background:var(--danger)}.dot-gray{background:#aaa}
+        .table th{background:var(--primary);color:#fff;font-size:.85rem}
+        .table td{font-size:.85rem}
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <h5><i class="bi bi-shield-check"></i> FuzzGAN</h5>
+        <small>协议模糊测试系统</small>
+    </div>
+    <ul class="nav flex-column" style="padding:10px 0">
+        <li class="nav-item"><a class="nav-link active" href="#" data-s="dashboard"><i class="bi bi-speedometer2"></i>系统概览</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="collect"><i class="bi bi-cloud-download"></i>数据采集</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="preprocess"><i class="bi bi-database"></i>数据预处理</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="data"><i class="bi bi-folder"></i>数据与文件</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="training"><i class="bi bi-cpu"></i>模型训练</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="generation"><i class="bi bi-magic"></i>用例生成</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="fuzzing"><i class="bi bi-bug"></i>模糊测试</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="evaluation"><i class="bi bi-graph-up"></i>结果评估</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="feedback"><i class="bi bi-arrow-repeat"></i>反馈调节</a></li>
+        <li class="nav-item"><a class="nav-link" href="#" data-s="iterative"><i class="bi bi-lightning"></i>迭代反馈</a></li>
+    </ul>
+</div>
+
+<div class="main">
+<!-- ========== DASHBOARD ========== -->
+<div id="dashboard" class="section active">
+    <div class="page-title"><h3><i class="bi bi-speedometer2"></i> 系统概览</h3></div>
+    <div class="row" id="stat-cards">
+        <div class="col-md-3"><div class="stat-card bg-grad-1"><h2 id="s-raw">-</h2><p>原始消息</p></div></div>
+        <div class="col-md-3"><div class="stat-card bg-grad-2"><h2 id="s-pcap">-</h2><p>PCAP文件</p></div></div>
+        <div class="col-md-3"><div class="stat-card bg-grad-3"><h2 id="s-cluster">-</h2><p>聚类子集</p></div></div>
+        <div class="col-md-3"><div class="stat-card bg-grad-4"><h2 id="s-model">-</h2><p>训练模型</p></div></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card"><div class="card-header"><i class="bi bi-bar-chart"></i> 聚类样本分布</div>
+            <div class="card-body"><canvas id="clusterChart" height="220"></canvas></div></div>
+        </div>
+        <div class="col-md-6">
+            <div class="card"><div class="card-header"><i class="bi bi-graph-up"></i> 三组实验TIRR对比</div>
+            <div class="card-body"><canvas id="expChart" height="220"></canvas></div></div>
+        </div>
+    </div>
+    <div class="card"><div class="card-header"><i class="bi bi-table"></i> 聚类详情</div>
+    <div class="card-body" id="cluster-table"></div></div>
+</div>
+
+<!-- ========== DATA COLLECTION ========== -->
+<div id="collect" class="section">
+    <div class="page-title"><h3><i class="bi bi-cloud-download"></i> 数据采集</h3></div>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#1abc9c,#16a085)"><i class="bi bi-hdd-stack"></i> PCAP文件</div>
+            <div class="card-body" id="pcap-list" style="max-height:300px;overflow-y:auto"><div class="text-muted text-center">加载中...</div></div></div>
+        </div>
+        <div class="col-md-7">
+            <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#e67e22,#d35400)"><i class="bi bi-gear"></i> 采集配置</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="cl-use-pcap" checked><label class="form-check-label" for="cl-use-pcap">从PCAP提取</label></div></div>
+                    <div class="col-md-6"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="cl-use-synth" checked><label class="form-check-label" for="cl-use-synth">生成模拟数据</label></div></div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6"><label class="form-label">模拟数据数量</label><input class="form-control" value="15000" type="number" id="cl-synth-num"></div>
+                    <div class="col-md-6" style="display:flex;align-items:flex-end"><button class="btn btn-primary w-100" onclick="startCollect()"><i class="bi bi-cloud-download"></i> 开始采集</button></div>
+                </div>
+                <span id="cl-st" class="ms-2"></span>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="card"><div class="card-header"><i class="bi bi-bar-chart"></i> 原始数据概览</div>
+    <div class="card-body" id="raw-info"><div class="text-muted text-center">加载中...</div></div></div>
+
+    <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 采集日志</div>
+    <div class="card-body"><div class="log-box" id="cl-log">等待执行...</div></div></div>
+</div>
+
+<!-- ========== PREPROCESSING ========== -->
+<div id="preprocess" class="section">
+    <div class="page-title"><h3><i class="bi bi-database"></i> 数据预处理</h3></div>
+
+    <!-- 数据质量改进 -->
+    <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"><i class="bi bi-shield-check"></i> 数据质量改进（去重、FC03补全、分层平衡）</div>
+    <div class="card-body">
+        <div class="row" id="quality-info">
+            <div class="col-md-12 text-muted">正在检测...</div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4"><button class="btn btn-danger" onclick="startQualityImprove()"><i class="bi bi-arrow-repeat"></i> 运行数据质量改进</button></div>
+            <div class="col-md-8"><span id="ql-st"></span></div>
+        </div>
+    </div></div>
+
+    <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#8e44ad,#9b6b6)"><i class="bi bi-diagram-3"></i> 预处理流水线: 清洗 → 去重 → 词表构建 → 数值化 → 填充 → 三种聚类</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3"><label class="form-label">最小消息长度</label><input class="form-control" value="7" type="number" id="pp-minlen"></div>
+            <div class="col-md-3"><label class="form-label">最大消息长度</label><input class="form-control" value="64" type="number" id="pp-maxlen"></div>
+            <div class="col-md-3"><label class="form-label">高级聚类K值</label><input class="form-control" value="8" type="number" id="pp-k"></div>
+            <div class="col-md-3"><label class="form-label">同长度阈值</label><input class="form-control" value="2000" type="number" id="pp-thresh"></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="pp-aug" checked><label class="form-check-label">数据增强(合并模拟数据)</label></div></div>
+            <div class="col-md-4"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="pp-clean-old" checked><label class="form-check-label">清除旧聚类目录</label></div></div>
+            <div class="col-md-4" style="display:flex;align-items:flex-end"><button class="btn btn-primary w-100" onclick="startPreprocess()"><i class="bi bi-play-fill"></i> 开始预处理</button></div>
+        </div>
+        <span id="pp-st" class="ms-2"></span>
+    </div></div>
+
+    <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 预处理日志</div>
+    <div class="card-body"><div class="log-box" id="pp-log">等待执行...</div></div></div>
+</div>
+
+<!-- ========== DATA & FILES ========== -->
+<div id="data" class="section">
+    <div class="page-title"><h3><i class="bi bi-database"></i> 数据与文件</h3></div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card"><div class="card-header"><i class="bi bi-file-earmark-text"></i> 测试用例文件</div>
+            <div class="card-body" id="tc-files" style="max-height:400px;overflow-y:auto"></div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-header"><i class="bi bi-journal-text"></i> 日志文件</div>
+            <div class="card-body" id="log-files" style="max-height:400px;overflow-y:auto"></div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card"><div class="card-header"><i class="bi bi-file-earmark-bar-graph"></i> 报告文件</div>
+            <div class="card-body" id="report-files" style="max-height:400px;overflow-y:auto"></div></div>
+        </div>
+    </div>
+    <div class="card"><div class="card-header"><i class="bi bi-eye"></i> 文件内容预览</div>
+    <div class="card-body"><div class="hex-box" id="file-preview">点击左侧文件查看内容</div></div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-seedling"></i> 异常种子 (<span id="seed-cnt">-</span>条)</div>
+    <div class="card-body"><div class="hex-box" id="seed-preview" style="max-height:250px"></div></div></div>
+</div>
+
+<!-- ========== TRAINING ========== -->
+<div id="training" class="section">
+    <div class="page-title"><h3><i class="bi bi-cpu"></i> 模型训练</h3></div>
+    <div class="card"><div class="card-header"><i class="bi bi-gear"></i> 已有模型</div>
+    <div class="card-body" id="model-list"></div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-play"></i> 启动训练</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2"><label class="form-label">训练数据源</label><select class="form-select" id="t-datasource"><option value="">检测中...</option></select></div>
+            <div class="col-md-2"><label class="form-label">聚类类型</label><select class="form-select" id="t-cluster"><option value="all">全部</option><option value="no_clustering">无聚类</option><option value="same_length">同长度</option><option value="advanced">高级</option></select></div>
+            <div class="col-md-2"><label class="form-label">输出目录</label><select class="form-select" id="t-outdir"><option value="model/checkpoints_improved">checkpoints_improved</option><option value="model/checkpoints_baseline">checkpoints_baseline</option></select></div>
+            <div class="col-md-2"><label class="form-label">Batch Size</label><input class="form-control" value="64" id="t-bs"></div>
+            <div class="col-md-2"><label class="form-label">对抗步数</label><input class="form-control" value="10" id="t-steps"></div>
+            <div class="col-md-2" style="display:flex;align-items:flex-end"><button class="btn btn-primary w-100" onclick="startTrain()"><i class="bi bi-play-fill"></i> 开始训练</button></div>
+        </div>
+        <span id="train-st" class="ms-2"></span>
+    </div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 训练日志</div>
+    <div class="card-body"><div class="log-box" id="train-log">等待执行...</div></div></div>
+</div>
+
+<!-- ========== GENERATION ========== -->
+<div id="generation" class="section">
+    <div class="page-title"><h3><i class="bi bi-magic"></i> 测试用例生成</h3></div>
+    <div class="card"><div class="card-header"><i class="bi bi-gear"></i> 生成配置</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3"><label class="form-label">聚类类型</label><select class="form-select" id="g-cluster"><option value="no_clustering">无聚类</option><option value="same_length">同长度</option><option value="advanced">高级</option></select></div>
+            <div class="col-md-3"><label class="form-label">类别ID</label><input class="form-control" value="0" type="number" id="g-class"></div>
+            <div class="col-md-3"><label class="form-label">生成数量</label><input class="form-control" value="500" type="number" id="g-num"></div>
+            <div class="col-md-3" style="display:flex;align-items:flex-end"><button class="btn btn-primary w-100" onclick="doGenerate()"><i class="bi bi-magic"></i> 生成</button></div>
+        </div>
+        <span id="gen-st" class="ms-2"></span>
+    </div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-eye"></i> 生成预览</div>
+    <div class="card-body"><div class="hex-box" id="gen-preview">点击生成按钮后显示</div></div></div>
+</div>
+
+<!-- ========== FUZZING ========== -->
+<div id="fuzzing" class="section">
+    <div class="page-title"><h3><i class="bi bi-bug"></i> 模糊测试</h3></div>
+    <div class="card"><div class="card-header"><i class="bi bi-gear"></i> 测试配置</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4"><label class="form-label">测试用例文件</label><select class="form-select" id="f-file"></select></div>
+            <div class="col-md-4"><label class="form-label">目标IP</label><input class="form-control" value="127.0.0.1" id="f-ip"></div>
+            <div class="col-md-4"><label class="form-label">目标端口</label><input class="form-control" value="502" type="number" id="f-port"></div>
+        </div>
+        <button class="btn btn-primary mt-2" onclick="startFuzz()"><i class="bi bi-play-fill"></i> 开始测试</button>
+        <span id="fuzz-st" class="ms-2"></span>
+    </div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 测试日志</div>
+    <div class="card-body"><div class="log-box" id="fuzz-log">等待执行...</div></div></div>
+</div>
+
+<!-- ========== EVALUATION ========== -->
+<div id="evaluation" class="section">
+    <div class="page-title"><h3><i class="bi bi-graph-up"></i> 结果评估</h3></div>
+    <div id="eval-cards"></div>
+    <div class="row">
+        <div class="col-md-6"><div class="card"><div class="card-header">TIRR对比 (越低越好)</div><div class="card-body"><canvas id="tirrChart" height="280"></canvas></div></div></div>
+        <div class="col-md-6"><div class="card"><div class="card-header">AoVD对比 (越高越好)</div><div class="card-body"><canvas id="aovdChart" height="280"></canvas></div></div></div>
+    </div>
+</div>
+
+<!-- ========== FEEDBACK ========== -->
+<div id="feedback" class="section">
+            <div class="page-title"><h3><i class="bi bi-arrow-repeat"></i> 反馈调节 (四步流水线)</h3></div>
+
+            <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#2c3e50,#3498db)"><i class="bi bi-diagram-3"></i> 反馈调节流水线: ①提取 → ②微调 → ③生成 → ④对比</div>
+            <div class="card-body">
+                <div class="row text-center mb-3">
+                    <div class="col-3"><div class="p-3 rounded" id="fb-step1-bg" style="background:#eee"><h5>① 提取种子</h5><small class="text-muted" id="fb-step1-st">待执行</small></div></div>
+                    <div class="col-3"><div class="p-3 rounded" id="fb-step2-bg" style="background:#eee"><h5>② 微调模型</h5><small class="text-muted" id="fb-step2-st">待执行</small></div></div>
+                    <div class="col-3"><div class="p-3 rounded" id="fb-step3-bg" style="background:#eee"><h5>③ 生成用例</h5><small class="text-muted" id="fb-step3-st">待执行</small></div></div>
+                    <div class="col-3"><div class="p-3 rounded" id="fb-step4-bg" style="background:#eee"><h5>④ 对比评估</h5><small class="text-muted" id="fb-step4-st">待执行</small></div></div>
+                </div>
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-primary" id="fb-btn1" onclick="fbStep1()"><i class="bi bi-search"></i> ① 提取种子</button>
+                    <button class="btn btn-outline-primary" id="fb-btn2" onclick="fbStep2()" disabled><i class="bi bi-cpu"></i> ② 微调模型</button>
+                    <button class="btn btn-outline-primary" id="fb-btn3" onclick="fbStep3()" disabled><i class="bi bi-magic"></i> ③ 生成用例</button>
+                    <button class="btn btn-outline-primary" id="fb-btn4" onclick="fbStep4()" disabled><i class="bi bi-bar-chart"></i> ④ 对比评估</button>
+                </div>
+                <div class="mt-3 text-center"><span class="badge bg-info" id="fb-seed-cnt">种子数: -</span></div>
+            </div></div>
+
+            <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 流水线日志</div>
+            <div class="card-body"><div class="log-box" id="fb-log" style="max-height:350px">点击按钮启动流水线</div></div></div>
+
+            <div class="card"><div class="card-header"><i class="bi bi-graph-up"></i> 对比评估结果</div>
+            <div class="card-body"><div id="fb-compare-result"><div class="text-muted text-center">等待执行④对比评估</div></div></div></div>
+        </div>
+
+<!-- ========== ITERATIVE ========== -->
+<div id="iterative" class="section">
+    <div class="page-title"><h3><i class="bi bi-lightning"></i> 迭代反馈调节</h3></div>
+    <div class="card"><div class="card-header" style="background:linear-gradient(135deg,#e74c3c,#c0392b)"><i class="bi bi-lightning-charge"></i> 迭代反馈配置</div>
+    <div class="card-body">
+        <div class="alert alert-info"><i class="bi bi-info-circle"></i> <b>迭代反馈：</b>每轮自动执行"生成→测试→提取种子→微调"循环，累积种子逐轮优化模型。</div>
+        <div class="row">
+            <div class="col-md-3"><label class="form-label">迭代轮数</label><input class="form-control" value="3" type="number" id="it-n" min="1" max="10"></div>
+            <div class="col-md-3"><label class="form-label">每轮生成数</label><input class="form-control" value="2000" type="number" id="it-gen"></div>
+            <div class="col-md-3"><label class="form-label">每轮微调Epoch</label><input class="form-control" value="3" type="number" id="it-ep"></div>
+            <div class="col-md-3"><label class="form-label">种子变体数</label><input class="form-control" value="8" type="number" id="it-mut"></div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-md-3"><label class="form-label">聚类类型</label><select class="form-select" id="it-ct"><option value="mixed" selected>混合聚类(推荐)</option><option value="no_clustering">无聚类</option><option value="same_length">同长度</option><option value="advanced">高级</option></select></div>
+            <div class="col-md-3"><label class="form-label">类别ID</label><input class="form-control" value="0" type="number" id="it-cid"></div>
+            <div class="col-md-3"><label class="form-label">学习率</label><input class="form-control" value="1e-4" id="it-lr"></div>
+            <div class="col-md-3" style="display:flex;align-items:flex-end"><button class="btn btn-primary w-100" onclick="startIter()" id="it-btn"><i class="bi bi-lightning-charge"></i> 启动迭代反馈</button></div>
+        </div>
+        <span id="it-st" class="ms-2"></span>
+    </div></div>
+    <div class="row">
+        <div class="col-md-4"><div class="card"><div class="card-header">当前状态</div><div class="card-body text-center" id="it-progress"><h5 class="text-muted">未启动</h5></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-header">TIRR趋势</div><div class="card-body"><canvas id="itTirr" height="180"></canvas></div></div></div>
+        <div class="col-md-4"><div class="card"><div class="card-header">AoVD趋势</div><div class="card-body"><canvas id="itAovd" height="180"></canvas></div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><i class="bi bi-terminal"></i> 迭代日志</div>
+    <div class="card-body"><div class="log-box" id="it-log" style="max-height:400px">等待启动...</div></div></div>
+    <div class="card"><div class="card-header"><i class="bi bi-clock-history"></i> 历史迭代记录</div>
+    <div class="card-body" id="it-history"><div class="text-muted text-center">暂无</div></div></div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let charts={};
+let trainInt,fuzzInt,fbInt,itInt;
+
+document.querySelectorAll('.nav-link').forEach(a=>{
+    a.onclick=e=>{e.preventDefault();
+        document.querySelectorAll('.nav-link').forEach(x=>x.classList.remove('active'));
+        a.classList.add('active');
+        document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+        $(a.dataset.s).classList.add('active');
+        loadSection(a.dataset.s);
+    };
+});
+
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML}
+
+function loadSection(s){
+    if(s==='dashboard') loadDashboard();
+    if(s==='collect') loadCollect();
+    if(s==='preprocess') loadPreprocessInfo();
+    if(s==='data') loadData();
+    if(s==='training') loadModels();
+    if(s==='generation') loadTCFiles();
+    if(s==='fuzzing') loadFuzzFiles();
+    if(s==='evaluation') loadEval();
+    if(s==='feedback') fetchSeeds();
+    if(s==='iterative') loadIterHistory();
+}
+
+/* ===== DATA COLLECTION ===== */
+let collectInt=null;
+
+function loadCollect(){
+    fetch('/api/data/pcap/list').then(r=>r.json()).then(d=>{
+        $('pcap-list').innerHTML=d.files.map(f=>`<div class="file-row"><div><b>${f.name}</b><br><small class="text-muted">${(f.size/1024).toFixed(1)}KB</small></div></div>`).join('')||'<div class="text-muted text-center">无PCAP文件</div>';
+    });
+    loadRawInfo();
+}
+
+function loadRawInfo(){
+    fetch('/api/data/raw/info').then(r=>r.json()).then(d=>{
+        let h=`<div class="row"><div class="col-md-3"><div class="stat-card bg-grad-1"><h2>${d.raw_count}</h2><p>原始消息</p></div></div><div class="col-md-3"><div class="stat-card bg-grad-2"><h2>${d.merged_count}</h2><p>增强后</p></div></div><div class="col-md-6"><h6>功能码分布 (前5000条)</h6><canvas id="funcDistChart" height="120"></canvas></div></div>`;
+        h+=`<div class="mt-2"><h6>原始消息预览</h6><div class="hex-box" style="max-height:80px">${(d.preview_raw||[]).join('\n')||'无数据'}</div></div>`;
+        $('raw-info').innerHTML=h;
+        if(d.func_dist_raw&&Object.keys(d.func_dist_raw).length){
+            setTimeout(()=>renderFuncDist(d.func_dist_raw),200);
+        }
+    });
+}
+
+function renderFuncDist(dist){
+    const labels=Object.keys(dist).sort((a,b)=>parseInt(a)-parseInt(b));
+    const data=labels.map(k=>dist[k]);
+    if(charts.funcDist)charts.funcDist.destroy();
+    charts.funcDist=new Chart($('funcDistChart'),{type:'bar',data:{labels,datasets:[{label:'计数',data,backgroundColor:'#3498db',borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+
+function startCollect(){
+    $('cl-st').innerHTML='<span class="dot dot-green running"></span>采集中';
+    fetch('/api/data/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({use_pcap:$('cl-use-pcap').checked,synthetic_count:parseInt($('cl-synth-num').value)})}).then(r=>r.json());
+    collectInt=setInterval(()=>{
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('cl-log').innerHTML=d.log.map(l=>`<div class="${l.includes('Error')?'err':l.includes('Done')?'ok':''}">${esc(l)}</div>`).join('');
+            $('cl-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('Done')){clearInterval(collectInt);$('cl-st').innerHTML='<span class="dot dot-gray"></span>完成';loadRawInfo();}
+        });
+    },1500);
+}
+
+/* ===== PREPROCESSING ===== */
+let ppInt=null;
+
+function loadPreprocessInfo(){
+    fetch('/api/data/raw/info').then(r=>r.json()).then(d=>{
+        if(!d.raw_count){$('pp-log').innerHTML='<div class="text-warning text-center">未找到原始数据，请先执行数据采集</div>';}
+        loadQualityInfo(d);
+    });
+}
+
+function loadQualityInfo(d){
+    let raw = d || {};
+    fetch('/api/data/quality/status').then(r=>r.json()).then(q=>{
+        let h = '';
+        if(q.improved_exists){
+            h += `<div class="col-md-6">
+                <div class="alert alert-warning mb-2 p-2"><b>原始数据 (${raw.raw_count||0}条)</b><br>FC03: ${raw.func_dist_raw?.['3']||0}条 | 重复率: 10.8% | 长度12: 58.4%</div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-success mb-2 p-2"><b>改进数据 (${q.improved_count}条)</b><br>
+                    FC01:${q.improved_fc_dist['1']||0}, FC02:${q.improved_fc_dist['2']||0}, FC03:${q.improved_fc_dist['3']||0}, FC04:${q.improved_fc_dist['4']||0}<br>
+                    FC05:${q.improved_fc_dist['5']||0}, FC06:${q.improved_fc_dist['6']||0}, FC15:${q.improved_fc_dist['15']||0}, FC16:${q.improved_fc_dist['16']||0}
+                    <br><small>零重复 · 分层平衡 · FC03已补全</small>
+                </div>
+            </div>`;
+        } else {
+            h = `<div class="col-md-12">
+                <div class="alert alert-secondary mb-2 p-2">
+                    <b>原始数据 (${raw.raw_count||0}条)</b> | 
+                    FC分布: ${raw.func_dist_raw?JSON.stringify(raw.func_dist_raw):'-'} | 
+                    长度分布: ${raw.length_dist_raw?JSON.stringify(raw.length_dist_raw):'-'}
+                    <br><b class="text-danger">问题：FC03缺失(0.0%)、高重复率(10.8%)、长度12占58.4%</b>
+                    <br>点击下方按钮运行数据质量改进
+                </div>
+            </div>`;
+        }
+        $('quality-info').innerHTML = h;
+    });
+}
+
+function startQualityImprove(){
+    $('ql-st').innerHTML='<span class="dot dot-green running"></span>质量改进中...';
+    fetch('/api/data/quality/improve',{method:'POST'}).then(r=>r.json());
+    qlInt = setInterval(()=>{
+        fetch('/api/preprocessing/log').then(r=>r.json()).then(d=>{
+            $('pp-log').innerHTML = d.log.map(l=>`<div class="${l.includes('Error')?'err':(l.includes('Done')||l.includes('---'))?'ok':''}">${esc(l)}</div>`).join('');
+            $('pp-log').scrollTop = 99999;
+            if(d.log.length>0 && d.log[d.log.length-1].includes('Done!')){
+                clearInterval(qlInt);
+                $('ql-st').innerHTML='<span class="dot dot-gray"></span>质量改进完成！预处理将自动使用改进数据';
+                loadQualityInfo();
+            }
+        });
+    },1500);
+}
+
+function startPreprocess(){
+    $('pp-st').innerHTML='<span class="dot dot-green running"></span>预处理中';
+    fetch('/api/preprocessing/run',{method:'POST'}).then(r=>r.json());
+    ppInt=setInterval(()=>{
+        fetch('/api/preprocessing/log').then(r=>r.json()).then(d=>{
+            $('pp-log').innerHTML=d.log.map(l=>`<div class="${l.includes('Error')?'err':l.includes('done')||l.includes('Done')?'ok':''}">${esc(l)}</div>`).join('');
+            $('pp-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('done')){clearInterval(ppInt);$('pp-st').innerHTML='<span class="dot dot-gray"></span>完成';}
+        });
+    },1500);
+}
+
+/* ===== DASHBOARD ===== */
+function loadDashboard(){
+    fetch('/api/data/overview').then(r=>r.json()).then(d=>{
+        $('s-raw').textContent=d.raw_messages;
+        $('s-pcap').textContent=d.pcap_files;
+        $('s-cluster').textContent=d.total_clusters;
+        $('s-model').textContent=d.total_models;
+        renderClusterChart(d.clusters);
+        renderClusterTable(d.clusters,d.models);
+        renderExpChart(d.reports);
+    });
+}
+function renderClusterChart(cl){
+    const labels=[],data=[],colors=[];
+    const cm={'no_clustering':'#3498db','same_length':'#27ae60','advanced':'#9b59b6'};
+    for(let t in cl) cl[t].classes.forEach(c=>{labels.push(t.substring(0,3)+'-'+c.id);data.push(c.samples);colors.push(cm[t])});
+    if(charts.cluster)charts.cluster.destroy();
+    charts.cluster=new Chart($('clusterChart'),{type:'bar',data:{labels,datasets:[{label:'样本数',data,backgroundColor:colors,borderRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+function renderClusterTable(cl,mo){
+    let h='';
+    for(let t in cl){
+        h+=`<h6 class="mt-2"><span class="badge" style="background:${t==='no_clustering'?'#3498db':t==='same_length'?'#27ae60':'#9b59b6'}">${t}</span></h6>`;
+        h+='<table class="table table-sm table-hover mb-3"><thead><tr><th>Class</th><th>样本</th><th>MaxLen</th><th>模型</th></tr></thead><tbody>';
+        const models=mo&&mo[t]?mo[t].classes:[];
+        cl[t].classes.forEach(c=>{
+            const m=models.find(x=>x.id===c.id);
+            const ckpt=m?m.checkpoints.join(', '):'无';
+            const retrained=m&&m.has_retrained?'<span class="badge bg-success">已微调</span>':'';
+            h+=`<tr><td>${c.id}</td><td>${c.samples}</td><td>${c.max_len}</td><td>${ckpt} ${retrained}</td></tr>`;
+        });
+        h+='</tbody></table>';
+    }
+    $('cluster-table').innerHTML=h;
+}
+function renderExpChart(reports){
+    if(!reports||!reports.length)return;
+    const labels=[],tirrData=[],aovdData=[];
+    reports.forEach(r=>{
+        const d=r.data;
+        for(let k in d){
+            labels.push(r.dir+' '+k);
+            tirrData.push(d[k].TIRR);
+            aovdData.push(d[k].AoVD);
+        }
+    });
+    if(charts.exp)charts.exp.destroy();
+    charts.exp=new Chart($('expChart'),{type:'bar',data:{labels,datasets:[{label:'TIRR%',data:tirrData,backgroundColor:'#e74c3c',borderRadius:4},{label:'AoVD',data:aovdData,backgroundColor:'#27ae60',borderRadius:4}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});
+}
+
+/* ===== DATA & FILES ===== */
+function loadData(){
+    fetch('/api/files/testcases').then(r=>r.json()).then(d=>{
+        $('tc-files').innerHTML=d.files.map(f=>`<div class="file-row" data-path="${f.path.replace(/\\/g,'\\\\')}" onclick="previewFile(this)"><div><b>${f.name}</b><span class="badge-dir">${f.dir}</span><br><small class="text-muted">${f.count}条 · ${f.mtime}</small></div><a href="/api/file/download?path=${encodeURIComponent(f.path)}" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation()"><i class="bi bi-download"></i></a></div>`).join('')||'<div class="text-muted text-center">无文件</div>';
+    });
+    fetch('/api/files/logs').then(r=>r.json()).then(d=>{
+        $('log-files').innerHTML=d.logs.map(f=>`<div class="file-row" data-path="${f.path.replace(/\\/g,'\\\\')}" onclick="previewFile(this)"><div><b>${f.name}</b><span class="badge-dir">${f.dir}</span><br><small class="text-muted">${f.lines}行 · ${(f.size/1024).toFixed(1)}KB · ${f.mtime}</small></div></div>`).join('')||'<div class="text-muted text-center">无文件</div>';
+    });
+    fetch('/api/files/reports').then(r=>r.json()).then(d=>{
+        $('report-files').innerHTML=d.reports.map(f=>`<div class="file-row" data-path="${f.path.replace(/\\/g,'\\\\')}" onclick="previewFile(this)"><div><b>${f.name}</b><span class="badge-dir">${f.dir}</span><br><small class="text-muted">${f.mtime}</small></div></div>`).join('')||'<div class="text-muted text-center">无文件</div>';
+    });
+    loadSeeds();
+}
+function previewFile(el){
+    const path=el.dataset.path;
+    fetch('/api/file/content?path='+encodeURIComponent(path)).then(r=>r.json()).then(d=>{
+        $('file-preview').textContent=d.content||d.error||'空文件';
+        $('file-preview').scrollTop=0;
+    }).catch(e=>{$('file-preview').textContent='加载失败: '+e.message});
+}
+function loadSeeds(){
+    fetch('/api/anomaly/seeds').then(r=>r.json()).then(d=>{
+        $('seed-cnt').textContent=d.count;
+        $('seed-preview').textContent=d.seeds.slice(0,30).join('\n')+(d.count>30?'\n... 共'+d.count+'条':'');
+    });
+}
+
+/* ===== TRAINING ===== */
+function loadModels(){
+    fetch('/api/models/list').then(r=>r.json()).then(d=>{
+        let h='';
+        for(let t in d){
+            h+=`<h6><span class="badge" style="background:${t==='no_clustering'?'#3498db':t==='same_length'?'#27ae60':'#9b59b6'}">${t}</span></h6>`;
+            h+='<table class="table table-sm table-hover mb-3"><thead><tr><th>Class</th><th>检查点</th><th>微调模型</th></tr></thead><tbody>';
+            d[t].classes.forEach(c=>{
+                const ckpt=c.checkpoints.filter(x=>!x.includes('retrain')).map(x=>`<span class="badge bg-secondary">${x}</span>`).join(' ');
+                const rt=c.has_retrained?'<span class="badge bg-success">generator_retrained.pth</span>':'<span class="text-muted">无</span>';
+                h+=`<tr><td>${c.id}</td><td>${ckpt}</td><td>${rt}</td></tr>`;
+            });
+            h+='</tbody></table>';
+        }
+        $('model-list').innerHTML=h||'<div class="text-muted">无模型</div>';
+    });
+    fetch('/api/clusters/list').then(r=>r.json()).then(d=>{
+        let sel=$('t-datasource');
+        sel.innerHTML='';
+        let found=false;
+        d.providers.forEach(p=>{
+            sel.innerHTML+=`<option value="${p.path}">${p.label} (${p.total_types}种聚类)</option>`;
+            found=true;
+        });
+        if(!found) sel.innerHTML='<option value="">未找到聚类数据</option>';
+    });
+}
+function startTrain(){
+    $('train-st').innerHTML='<span class="dot dot-green running"></span>训练中';
+    fetch('/api/train/start',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            cluster_type:$('t-cluster').value,
+            cluster_root:$('t-datasource').value,
+            output_dir:$('t-outdir').value
+        })
+    }).then(r=>r.json());
+    trainInt=setInterval(()=>{
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('train-log').innerHTML=d.log.map(l=>`<div class="${l.includes('Error')?'err':l.includes('Saved')||l.includes('Finished')?'ok':''}">${esc(l)}</div>`).join('');
+            $('train-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('Finished')){clearInterval(trainInt);$('train-st').innerHTML='<span class="dot dot-gray"></span>完成';}
+        });
+    },1500);
+}
+
+/* ===== GENERATION ===== */
+function loadTCFiles(){loadData();}
+function doGenerate(){
+    $('gen-st').textContent='生成中...';
+    fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cluster_type:$('g-cluster').value,class_id:+$('g-class').value,num_cases:+$('g-num').value})})
+    .then(r=>r.json()).then(d=>{
+        if(d.error){$('gen-st').innerHTML=`<span class="text-danger">${d.error}</span>`;return;}
+        $('gen-st').innerHTML=`<span class="text-success">已生成 ${d.num_generated} 条</span>`;
+        $('gen-preview').textContent=d.sample_cases.join('\n');
+    });
+}
+
+/* ===== FUZZING ===== */
+function loadFuzzFiles(){
+    fetch('/api/files/testcases').then(r=>r.json()).then(d=>{
+        $('f-file').innerHTML=d.files.map(f=>`<option value="${f.path}">${f.name} (${f.dir}, ${f.count}条)</option>`).join('');
+    });
+}
+function startFuzz(){
+    const f=$('f-file').value;if(!f){alert('请选择文件');return;}
+    $('fuzz-st').innerHTML='<span class="dot dot-green running"></span>测试中';
+    fetch('/api/fuzzing/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({test_file:f,target_ip:$('f-ip').value,target_port:+$('f-port').value})}).then(r=>r.json());
+    fuzzInt=setInterval(()=>{
+        fetch('/api/fuzzing/log').then(r=>r.json()).then(d=>{
+            $('fuzz-log').innerHTML=d.log.map(l=>`<div class="${l.includes('ERROR')?'err':l.includes('SUCCESS')?'ok':''}">${esc(l)}</div>`).join('');
+            $('fuzz-log').scrollTop=99999;
+        });
+    },1500);
+}
+
+/* ===== EVALUATION ===== */
+function loadEval(){
+    fetch('/api/evaluation/all').then(r=>r.json()).then(d=>{
+        let h='<div class="row">';
+        for(let label in d){
+            const r=d[label];
+            let cards='';
+            for(let k in r){
+                const tirrCls=r[k].TIRR<80?'good':r[k].TIRR>95?'bad':'';
+                const aovdCls=r[k].AoVD>30?'good':'';
+                cards+=`<div class="col-md-4"><div class="metric-box ${tirrCls}"><h3>${r[k].TIRR.toFixed(2)}%</h3><p>TIRR</p></div><div class="metric-box ${aovdCls}"><h3>${r[k].AoVD.toFixed(2)}</h3><p>AoVD</p></div><p class="text-center"><b>${k}</b></p></div>`;
+            }
+            h+=`<div class="col-md-4"><div class="card"><div class="card-header">${label}</div><div class="card-body"><div class="row">${cards}</div></div></div></div>`;
+        }
+        h+='</div>';
+        $('eval-cards').innerHTML=h;
+        renderEvalCharts(d);
+    });
+}
+function renderEvalCharts(d){
+    const labels=[],tirr=[],aovd=[];
+    for(let label in d) for(let k in d[label]){labels.push(label+' '+k);tirr.push(d[label][k].TIRR);aovd.push(d[label][k].AoVD);}
+    if(charts.tirr)charts.tirr.destroy();
+    charts.tirr=new Chart($('tirrChart'),{type:'bar',data:{labels,datasets:[{label:'TIRR%',data:tirr,backgroundColor:'#e74c3c',borderRadius:4}]},options:{responsive:true,indexAxis:'y',scales:{x:{beginAtZero:true}}}});
+    if(charts.aovd)charts.aovd.destroy();
+    charts.aovd=new Chart($('aovdChart'),{type:'bar',data:{labels,datasets:[{label:'AoVD',data:aovd,backgroundColor:'#27ae60',borderRadius:4}]},options:{responsive:true,indexAxis:'y',scales:{x:{beginAtZero:true}}}});
+}
+
+/* ===== FEEDBACK (4-Step Pipeline) ===== */
+let fbCheckInt=null;
+
+function fbStepDone(n){
+    const colors=['#a8d8ea','#a8e6cf','#ffd3b6','#d5aaff'];
+    $('fb-step'+n+'-st').innerHTML='<span class="text-success">✓ 完成</span>';
+    $('fb-step'+n+'-bg').style.background=colors[n-1];
+    $('fb-btn'+n).className='btn btn-success';$('fb-btn'+n).disabled=true;
+}
+
+function fbStepActive(n){
+    $('fb-step'+n+'-st').innerHTML='<span class="running" style="color:var(--secondary)">▶ 运行中</span>';
+    $('fb-step'+n+'-bg').style.background='#d4ebf2';
+    $('fb-btn'+n).className='btn btn-primary running';$('fb-btn'+n).disabled=true;
+}
+
+function stopFbCheck(){if(fbCheckInt){clearInterval(fbCheckInt);fbCheckInt=null;}}
+
+function fbStep1(){
+    fbStepActive(1);
+    fetch('/api/feedback/extract',{method:'POST'}).then(r=>r.json()).then(d=>{
+        $('fb-seed-cnt').textContent='种子数: '+d.seed_count;
+    });
+    fbCheckInt=setInterval(()=>{
+        fetch('/api/anomaly/seeds').then(r=>r.json()).then(d=>{
+            $('fb-seed-cnt').textContent='种子数: '+d.count;
+        });
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('fb-log').innerHTML=d.log.map(l=>`<div>${esc(l)}</div>`).join('');
+            $('fb-log').scrollTop=99999;
+        });
+    },1500);
+    setTimeout(()=>{stopFbCheck();fbStepDone(1);$('fb-btn2').disabled=false;$('fb-btn2').className='btn btn-primary';$('fb-btn2').onclick=fbStep2;},6000);
+}
+
+function fbStep2(){
+    fbStepActive(2);
+    fetch('/api/feedback/retrain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({epochs:5})}).then(r=>r.json());
+    fbCheckInt=setInterval(()=>{
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('fb-log').innerHTML=d.log.map(l=>`<div class="${l.includes('Error')?'err':l.includes('saved')||l.includes('Retrained')?'ok':''}">${esc(l)}</div>`).join('');
+            $('fb-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('Retrained')){stopFbCheck();fbStepDone(2);$('fb-btn3').disabled=false;$('fb-btn3').className='btn btn-primary';$('fb-btn3').onclick=fbStep3;}
+        });
+    },1500);
+}
+
+function fbStep3(){
+    fbStepActive(3);
+    fetch('/api/feedback/generate',{method:'POST'}).then(r=>r.json());
+    fbCheckInt=setInterval(()=>{
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('fb-log').innerHTML=d.log.map(l=>`<div class="${l.includes('Error')?'err':l.includes('Generated')?'ok':''}">${esc(l)}</div>`).join('');
+            $('fb-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('Generated')){stopFbCheck();fbStepDone(3);$('fb-btn4').disabled=false;$('fb-btn4').className='btn btn-primary';$('fb-btn4').onclick=fbStep4;}
+        });
+    },1500);
+}
+
+function fbStep4(){
+    fbStepActive(4);
+    fetch('/api/feedback/compare',{method:'POST'}).then(r=>r.json());
+    fbCheckInt=setInterval(()=>{
+        fetch('/api/train/log').then(r=>r.json()).then(d=>{
+            $('fb-log').innerHTML=d.log.map(l=>`<div class="${l.includes('TIRR')||l.includes('AoVD')?'ok':l.includes('Error')?'err':''}">${esc(l)}</div>`).join('');
+            $('fb-log').scrollTop=99999;
+            if(d.log.length>0&&d.log[d.log.length-1].includes('AoVD')){stopFbCheck();fbStepDone(4);renderFbCompare(d.log);}
+        });
+    },1500);
+}
+
+function renderFbCompare(logLines){
+    let tirr={},aovd={};
+    logLines.forEach(l=>{
+        const m=l.match(/(Random|Mutation|GAN_Retrained):\s*([\d.]+)%/);
+        if(m&&l.includes('TIRR')){tirr[m[1]]=parseFloat(m[2]);return;}
+        const a=l.match(/(Random|Mutation|GAN_Retrained):\s*([\d.]+)/);
+        if(a&&l.includes('AoVD')){aovd[a[1]]=parseFloat(a[2]);}
+    });
+    let h='<div class="row">';
+    ['Random','Mutation','GAN_Retrained'].forEach(name=>{
+        const t=tirr[name]!==undefined?tirr[name]:'?';
+        const a=aovd[name]!==undefined?aovd[name]:'?';
+        const tCls=(typeof t==='number'&&t<80)?'good':'';
+        const aCls=(typeof a==='number'&&a>30)?'good':'';
+        h+=`<div class="col-md-4"><div class="metric-box ${tCls}"><h3>${typeof t==='number'?t.toFixed(2)+'%':t}</h3><p>TIRR</p></div><div class="metric-box ${aCls}"><h3>${typeof a==='number'?a.toFixed(2):a}</h3><p>AoVD</p></div><p class="text-center"><b>${name}</b></p></div>`;
+    });
+    h+='</div>';
+    $('fb-compare-result').innerHTML=h;
+}
+
+function fetchSeeds(){
+    fetch('/api/anomaly/seeds').then(r=>r.json()).then(d=>{
+        $('fb-seed-cnt').textContent='种子数: '+d.count;
+    });
+}
+
+/* ===== ITERATIVE ===== */
+function startIter(){
+    $('it-btn').disabled=true;$('it-btn').innerHTML='<i class="bi bi-hourglass"></i> 运行中...';
+    $('it-st').innerHTML='<span class="dot dot-green running"></span>迭代中';
+    $('it-progress').innerHTML='<h5 class="running" style="color:var(--danger)">启动中...</h5>';
+    fetch('/api/feedback/iterative/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        iterations:+$('it-n').value,num_generate:+$('it-gen').value,cluster_type:$('it-ct').value,
+        class_id:+$('it-cid').value,retrain_epochs:+$('it-ep').value,retrain_lr:+$('it-lr').value,
+        mutations_per_seed:+$('it-mut').value,target_port:502
+    })}).then(r=>r.json());
+    itInt=setInterval(updateIter,2000);
+}
+function updateIter(){
+    fetch('/api/feedback/iterative/status').then(r=>r.json()).then(s=>{
+        if(s.running){
+            $('it-progress').innerHTML=`<h5 class="running" style="color:var(--danger)">迭代 ${s.current_iteration}/${s.total_iterations}</h5><div class="progress mt-2" style="height:16px"><div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" style="width:${(s.current_iteration/s.total_iterations)*100}%">${s.current_iteration}/${s.total_iterations}</div></div>`;
+        }else if(s.history&&s.history.length>0){
+            const last=s.history[s.history.length-1];
+            $('it-progress').innerHTML=`<h5 style="color:var(--success)">已完成</h5><div class="metric-box good"><h3>${last.tirr.toFixed(2)}%</h3><p>TIRR</p></div><div class="metric-box"><h3>${last.aovd.toFixed(2)}</h3><p>AoVD</p></div>`;
+            $('it-btn').disabled=false;$('it-btn').innerHTML='<i class="bi bi-lightning-charge"></i> 启动迭代反馈';
+            $('it-st').innerHTML='<span class="dot dot-gray"></span>完成';
+            clearInterval(itInt);renderIterCharts(s.history);
+        }
+    });
+    fetch('/api/feedback/iterative/log').then(r=>r.json()).then(d=>{
+        $('it-log').innerHTML=d.log.map(l=>`<div class="${l.includes('ERROR')?'err':l.includes('完成')||l.includes('Saved')?'ok':l.includes('Step')?'warn':''}">${esc(l)}</div>`).join('');
+        $('it-log').scrollTop=99999;
+    });
+}
+function renderIterCharts(h){
+    const labels=h.map(x=>'第'+x.iteration+'轮');
+    if(charts.itTirr)charts.itTirr.destroy();
+    charts.itTirr=new Chart($('itTirr'),{type:'line',data:{labels,datasets:[{label:'TIRR%',data:h.map(x=>x.tirr),borderColor:'#e74c3c',backgroundColor:'rgba(231,76,60,.1)',fill:true,tension:.3,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+    if(charts.itAovd)charts.itAovd.destroy();
+    charts.itAovd=new Chart($('itAovd'),{type:'line',data:{labels,datasets:[{label:'AoVD',data:h.map(x=>x.aovd),borderColor:'#27ae60',backgroundColor:'rgba(39,174,96,.1)',fill:true,tension:.3,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+function loadIterHistory(){
+    fetch('/api/feedback/iterative/history').then(r=>r.json()).then(d=>{
+        if(!d.runs||!d.runs.length){$('it-history').innerHTML='<div class="text-muted text-center">暂无</div>';return;}
+        $('it-history').innerHTML=d.runs.map(r=>{
+            const rows=r.history.map(h=>`<tr><td>${h.iteration}</td><td>${h.valid_cases}</td><td>${h.tirr.toFixed(2)}%</td><td>${h.aovd.toFixed(2)}</td><td>${h.anomaly_seeds}</td><td>${h.cumulative_seeds}</td></tr>`).join('');
+            return `<div class="card mb-2"><div class="card-header d-flex justify-content-between"><span>${r.name}</span>${r.has_final_model?'<span class="badge bg-success">模型可用</span>':''}</div><div class="card-body"><table class="table table-sm table-striped mb-0"><thead><tr><th>轮次</th><th>有效用例</th><th>TIRR</th><th>AoVD</th><th>新种子</th><th>累计</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+        }).join('');
+    });
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# requirements.txt
+numpy>=1.21.0
+scikit-learn>=1.0.0
+scapy>=2.4.5
+torch>=2.8.0
+tqdm>=4.64.0
+matplotlib>=3.5.0
+flask>=2.3.0
+flask-cors>=4.0.0
